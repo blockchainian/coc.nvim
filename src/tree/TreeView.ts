@@ -808,25 +808,8 @@ export default class BasicTreeView<T> implements TreeView<T> {
 
   private updateHeadLines(initialize = false): void {
     let { titleCount, messageCount } = this.lineState
-    let end = initialize ? -1 : titleCount + messageCount
-    let lines: string[] = []
-    let highlights: HighlightItem[] = []
-    if (this.message) {
-      highlights.push({ hlGroup: 'MoreMsg', colStart: 0, colEnd: byteLength(this.message), lnum: 0 })
-      lines.push(this.message)
-      lines.push('')
-    }
-    if (this.title) {
-      highlights.push({ hlGroup: 'CocTreeTitle', colStart: 0, colEnd: byteLength(this.title), lnum: lines.length })
-      if (this.description) {
-        let colStart = byteLength(this.title) + 1
-        highlights.push({ hlGroup: 'Comment', colStart, colEnd: colStart + byteLength(this.description), lnum: lines.length })
-      }
-      lines.push(this.title + (this.description ? ' ' + this.description : ''))
-    }
-    this.lineState.messageCount = this.message ? 2 : 0
-    this.lineState.titleCount = this.title ? 1 : 0
-    this.updateUI(lines, highlights, 0, end)
+    this.lineState.messageCount = 0
+    this.lineState.titleCount = 0
     if (!initialize) {
       this.refreshSigns()
     }
@@ -885,7 +868,6 @@ export default class BasicTreeView<T> implements TreeView<T> {
       this.lineState = { titleCount: 0, messageCount: 1 }
       release()
       let errMsg = `${err}`.replace(/\r?\n/g, ' ')
-      this.updateUI([errMsg], [{ hlGroup: 'WarningMsg', colStart: 0, colEnd: byteLength(errMsg), lnum: 0 }])
       if (this.retryTimers == maxRetry) return
       this.timer = setTimeout(() => {
         this.retryTimers = this.retryTimers + 1
