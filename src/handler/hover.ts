@@ -116,14 +116,12 @@ export default class HoverHandler {
     if (hoverTarget == 'preview') this.registerProvider()
     this.handler.checkProvider(ProviderName.Hover, doc.textDocument)
     await doc.synchronize()
-    const hovers: (Hover | Documentation)[] = await this.handler.withRequestToken('hover', token => {
-      return languages.getHover(doc.textDocument, position, token)
-    }, true)
-    if (isFalsyOrEmpty(hovers)) return false
     const defs = await this.handler.withRequestToken('definitionHover', token => {
       return languages.getDefinitionLinks(doc.textDocument, position, token)
     }, false)
+    const hovers = []
     await addDefinitions(hovers, defs, doc.filetype)
+    if (isFalsyOrEmpty(hovers)) return false
     let hover = hovers.find(o => Hover.is(o) && Range.is(o.range)) as Hover
     if (hover) {
       let win = this.nvim.createWindow(winid)
