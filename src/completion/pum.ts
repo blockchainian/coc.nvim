@@ -338,19 +338,6 @@ export default class PopupMenu {
           }
           break
         case 'shortcut':
-          if (config.shortcutWidth > 0) {
-            let colStart = len
-            let shortcut = item.shortcut
-            append(shortcut ? `[${shortcut}]` : '', config.shortcutWidth + 1)
-            if (shortcut) {
-              hls.push({
-                hlGroup: HighlightGroups.PumShortcut,
-                lnum: index,
-                colStart,
-                colEnd: colStart + byteLength(shortcut) + 2
-              })
-            }
-          }
           break
       }
     }
