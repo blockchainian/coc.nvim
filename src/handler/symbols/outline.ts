@@ -139,7 +139,7 @@ export default class SymbolsOutline {
       kind: documentSymbol.kind,
       range: documentSymbol.range,
       selectRange: documentSymbol.selectionRange,
-      children: Array.isArray(documentSymbol.children) ? documentSymbol.children.map(o => {
+      children: Array.isArray(documentSymbol.children) ? filterLocalSymbols(documentSymbol).map(o => {
         return this.convertSymbolToNode(o, sortFn)
       }).sort(sortFn) : undefined
     }
@@ -410,4 +410,14 @@ function getNodeByPosition(position: Position, nodes: ReadonlyArray<OutlineNode>
   }
   checkNodes(nodes)
   return curr
+}
+
+function filterLocalSymbols(symbol: DocumentSymbol): DocumentSymbol[] {
+  if (symbol.kind != SymbolKind.Function && symbol.kind != SymbolKind.Method) {
+    return symbol.children
+  }
+
+  return symbol.children.filter(child => {
+    return child.kind != SymbolKind.Variable && child.kind != SymbolKind.Property
+  })
 }
