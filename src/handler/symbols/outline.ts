@@ -165,7 +165,7 @@ export default class SymbolsOutline {
       }
       return comparePosition(a.selectRange.start, b.selectRange.start)
     }
-    return symbols.map(s => this.convertSymbolToNode(s, sortFn)).sort(sortFn)
+    return symbols.filter(s => s.kind != SymbolKind.Property).map(s => this.convertSymbolToNode(s, sortFn)).sort(sortFn)
   }
 
   public onSymbolsUpdate(bufnr: number, symbols: DocumentSymbol[]): void {
