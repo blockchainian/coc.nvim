@@ -8,6 +8,7 @@ import BufferSync from '../../model/bufferSync'
 import BasicDataProvider, { TreeNode } from '../../tree/BasicDataProvider'
 import BasicTreeView from '../../tree/TreeView'
 import { disposeAll, getConditionValue } from '../../util'
+import { filterGlobalSymbol, filterLocalSymbols, getSymbolKindWeight } from '../../util/convert'
 import { comparePosition, positionInRange } from '../../util/position'
 import type { Disposable } from '../../util/protocol'
 import window from '../../window'
@@ -161,11 +162,11 @@ export default class SymbolsOutline {
       }
       if (sortBy === 'category') {
         if (a.kind == b.kind) return a.label < b.label ? -1 : 1
-        return a.kind - b.kind
+        return getSymbolKindWeight(a.kind) - getSymbolKindWeight(b.kind)
       }
       return comparePosition(a.selectRange.start, b.selectRange.start)
     }
-    return symbols.filter(s => s.kind != SymbolKind.Property).map(s => this.convertSymbolToNode(s, sortFn)).sort(sortFn)
+    return symbols.filter(filterGlobalSymbol).map(s => this.convertSymbolToNode(s, sortFn)).sort(sortFn)
   }
 
   public onSymbolsUpdate(bufnr: number, symbols: DocumentSymbol[]): void {
@@ -410,14 +411,4 @@ function getNodeByPosition(position: Position, nodes: ReadonlyArray<OutlineNode>
   }
   checkNodes(nodes)
   return curr
-}
-
-function filterLocalSymbols(symbol: DocumentSymbol): DocumentSymbol[] {
-  if (symbol.kind != SymbolKind.Function && symbol.kind != SymbolKind.Method) {
-    return symbol.children
-  }
-
-  return symbol.children.filter(child => {
-    return child.kind != SymbolKind.Variable && child.kind != SymbolKind.Property
-  })
 }

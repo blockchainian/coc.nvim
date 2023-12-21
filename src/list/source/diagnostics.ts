@@ -12,8 +12,8 @@ export function convertToLabel(item: DiagnosticItem, cwd: string, includeCode: b
   const file = isParentFolder(cwd, item.file) ? path.relative(cwd, item.file) : item.file
   const formattedPath = formatPath(pathFormat, file)
   const formattedPosition = pathFormat !== "hidden" ? [`${formattedPath}:${item.lnum}`] : []
-  const source = includeCode ? `[${item.source} ${defaultValue(item.code, '')}]` : item.source
-  return [...formattedPosition, source, item.severity, item.message]
+  const source = includeCode ? `[${item.severity[0]} ${defaultValue(item.code, '')}]` : ''
+  return [...formattedPosition, source, item.message]
 }
 
 export default class DiagnosticsList extends LocationList {
