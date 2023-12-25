@@ -1,21 +1,20 @@
 'use strict'
 import { DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
 
+function normalizeSymbolName(symbol: DocumentSymbol): string {
+  return symbol.name.replace(/\(get\) |\(set\) /, '')
+}
+
+export function isGlobalSymbol(symbol: DocumentSymbol): boolean {
+  return !symbol.name.startsWith('_')
+}
+
 export function filterGlobalSymbol(symbol: DocumentSymbol): boolean {
-  return symbol.kind != SymbolKind.Property && !symbol.name.startsWith('_')
+  return isGlobalSymbol(symbol) && symbol.kind != SymbolKind.Property
 }
 
 export function filterLocalSymbols(symbol: DocumentSymbol): DocumentSymbol[] {
-  const targets: SymbolKind[] = [
-    SymbolKind.Constructor,
-    SymbolKind.Enum,
-    SymbolKind.Function,
-    SymbolKind.Interface,
-    SymbolKind.Method,
-    SymbolKind.Property,
-    SymbolKind.Variable,
-  ]
-  const excluded: SymbolKind[] = [
+  const defaultFilter: Set<SymbolKind> = new Set([
     SymbolKind.Array,
     SymbolKind.Boolean,
     SymbolKind.Constant,
@@ -24,21 +23,36 @@ export function filterLocalSymbols(symbol: DocumentSymbol): DocumentSymbol[] {
     SymbolKind.Package,
     SymbolKind.Property,
     SymbolKind.Variable,
-  ]
-  if (!targets.includes(symbol.kind)) {
-    return symbol.children.filter(child => {
-      return !child.name.startsWith('_')
-    }).map(
-    child => {
-      return {
-        ...child,
-        name: child.name.replace(/\(get\) |\(set\) /, ''),
-      }
-    }
-    )
+  ])
+  const targetFilter: Partial<Record<SymbolKind, Set<SymbolKind>>> = {
+    [SymbolKind.Class]: new Set([
+      SymbolKind.Array,
+      SymbolKind.Boolean,
+      SymbolKind.Constant,
+      SymbolKind.Number,
+      SymbolKind.String,
+      SymbolKind.Struct,
+      SymbolKind.Variable,
+    ]),
+    [SymbolKind.Constructor]: defaultFilter,
+    [SymbolKind.Enum]: defaultFilter,
+    [SymbolKind.Function]: defaultFilter,
+    [SymbolKind.Interface]: defaultFilter,
+    [SymbolKind.Method]: defaultFilter,
+    [SymbolKind.Property]: defaultFilter,
+    [SymbolKind.Variable]: defaultFilter,
   }
-  return symbol.children.filter(child => {
-    return !excluded.includes(child.kind)
+  const filter = (child: DocumentSymbol) => {
+    return !targetFilter[symbol.kind] || !targetFilter[symbol.kind].has(child.kind)
+  }
+
+  return symbol.children?.filter(filter).filter(isGlobalSymbol)
+    .map(s => {
+    return {
+      ...s,
+      name: normalizeSymbolName(s),
+      children: filterLocalSymbols(s),
+    }
   })
 }
 
