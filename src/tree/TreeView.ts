@@ -927,9 +927,11 @@ export default class BasicTreeView<T> implements TreeView<T> {
     this.disposables.push(workspace.registerLocalKeymap(this.bufnr, 'n', '<C-o>', () => {
       nvim.call('win_gotoid', [this._targetWinId], true)
     }, true))
-    this.addLocalKeymap('n', '<LeftRelease>', async element => {
-      if (element) await this.onClick(element)
-    })
+    for (const key of ['<cr>', '<LeftRelease>']) {
+      this.addLocalKeymap('n', key, async element => {
+        if (element) await this.onClick(element)
+      })
+    }
     this.filter && this.addLocalKeymap('n', activeFilter, async () => {
       this.nvim.command(`exe ${this.startLnum}`, true)
       this.filter.active()
