@@ -406,7 +406,8 @@ export default class BasicTreeView<T> implements TreeView<T> {
       filetype: isMarkdown ? 'markdown' : 'txt',
       content: MarkupContent.is(item.tooltip) ? item.tooltip.value : item.tooltip
     }
-    await this.tooltipFactory.show([doc])
+    // NOTE: do not show tooltip
+    // await this.tooltipFactory.show([doc])
   }
 
   private async onClick(element: T): Promise<void> {
@@ -445,8 +446,12 @@ export default class BasicTreeView<T> implements TreeView<T> {
       await window.showWarningMessage('No actions available')
       return
     }
-    let keys = actions.map(o => o.title)
-    let res = await window.showMenuPicker(keys, 'Choose action')
+    let res = -1
+    if (actions.length == 1 && actions[0].title == 'Visual Select') {
+      res = 0
+    } else {
+      res = await window.showMenuPicker(actions.map(o => o.title), 'Choose action')
+    }
     if (res == -1) return
     await Promise.resolve(actions[res].handler(element))
   }
