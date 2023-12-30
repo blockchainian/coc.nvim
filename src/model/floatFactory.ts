@@ -94,7 +94,6 @@ export default class FloatFactoryImpl implements Disposable {
 
   /**
    * Create float window/popup at cursor position.
-   *
    * @deprecated use show method instead
    */
   public async create(docs: Documentation[], _allowSelection = false, offsetX = 0): Promise<void> {
@@ -107,7 +106,6 @@ export default class FloatFactoryImpl implements Disposable {
    * Show documentations in float window/popup around cursor.
    * Window and buffer are reused when possible.
    * Window is closed automatically on change buffer, InsertEnter, CursorMoved and CursorMovedI.
-   *
    * @param docs List of documentations.
    * @param config Configuration for floating window/popup.
    */
@@ -177,6 +175,10 @@ export default class FloatFactoryImpl implements Disposable {
     this._bufnr = bufnr
     this.targetBufnr = targetBufnr
     this.cursor = cursor
+    let filetypes = new Set(codes.map(code => code.filetype))
+    if (filetypes.size === 1) {
+      this.nvim.call('setbufvar', [bufnr, '&filetype', Array.from(filetypes)[0]], true)
+    }
     this.bindEvents(autoHide, alignTop == 1)
   }
 

@@ -74,7 +74,7 @@ export default class Prompt {
       if (interactive) {
         cmds.push(`echohl MoreMsg | echon 'INTERACTIVE ' | echohl None`)
       } else if (_matcher) {
-        cmds.push(`echohl MoreMsg | echon '${_matcher.toUpperCase()} ' | echohl None`)
+        cmds.push(`echohl MoreMsg | echon '' | echohl None`)
       }
       cmds.push(`echohl Special | echon '${indicator} ' | echohl None`)
       if (cusorIndex == input.length) {
