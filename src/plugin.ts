@@ -91,7 +91,7 @@ export default class Plugin {
     this.addAction('pickColor', () => this.handler.colors.pickColor())
     this.addAction('colorPresentation', () => this.handler.colors.pickPresentation())
     this.addAction('highlight', () => this.handler.documentHighlighter.highlight())
-    this.addAction('fold', (kind?: string) => this.handler.fold.fold(kind))
+    this.addAction('fold', (...kinds: string[]) => this.handler.fold.fold(kinds))
     this.addAction('startCompletion', option => completion.startCompletion(option))
     this.addAction('sourceStat', () => sources.sourceStats())
     this.addAction('refreshSource', name => sources.refresh(name))

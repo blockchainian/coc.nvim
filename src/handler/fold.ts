@@ -8,7 +8,7 @@ export default class FoldHandler {
   constructor(private nvim: Neovim, private handler: HandlerDelegate) {
   }
 
-  public async fold(kind?: FoldingRangeKind): Promise<boolean> {
+  public async fold(kinds?: FoldingRangeKind[]): Promise<boolean> {
     let { doc, winid } = await this.handler.getCurrentState()
     this.handler.checkProvider(ProviderName.FoldingRange, doc.textDocument)
     await doc.synchronize()
@@ -18,7 +18,7 @@ export default class FoldHandler {
       return languages.provideFoldingRanges(doc.textDocument, {}, token)
     }, true)
     if (!ranges || !ranges.length) return false
-    if (kind) ranges = ranges.filter(o => o.kind == kind)
+    if (kinds) ranges = ranges.filter(o => kinds.includes(o.kind))
     ranges.sort((a, b) => b.startLine - a.startLine)
     this.nvim.pauseNotification()
     win.setOption('foldmethod', 'manual', true)
