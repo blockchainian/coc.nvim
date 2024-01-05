@@ -118,9 +118,7 @@ function! coc#notify#create(lines, config) abort
   let key = json_encode(extend({'lines': a:lines}, a:config))
   let winid = s:find_win(key)
   let kind = get(a:config, 'kind', '')
-  let row = 0
   if winid != -1
-    let row = getwinvar(winid, 'top', 0)
     call filter(s:winids, 'v:val != '.winid)
     call coc#float#close(winid, 1)
     let winid = v:null
@@ -172,13 +170,7 @@ function! coc#notify#create(lines, config) abort
     let height = height + 1
     call s:add_action_highlights(before, height - 1, highlights, actions)
   endif
-  if row == 0
-    let wintop = coc#notify#get_top()
-    let row = wintop - height - (empty(border) ? 0 : 2) - 1
-    if !s:is_vim && !empty(border)
-      let row = row + 1
-    endif
-  endif
+  let row = 1
   let col = &columns - margin - width
   if s:is_vim && !empty(border)
     let col = col - 2
@@ -193,7 +185,7 @@ function! coc#notify#create(lines, config) abort
       \ 'width': width,
       \ 'height': height,
       \ 'col': col,
-      \ 'row': row + 1,
+      \ 'row': row,
       \ 'lines': lines,
       \ 'rounded': 1,
       \ 'highlights': highlights,
@@ -208,7 +200,6 @@ function! coc#notify#create(lines, config) abort
   let bufnr = result[1]
   call setwinvar(winid, 'right', 1)
   call setwinvar(winid, 'kind', 'notification')
-  call setwinvar(winid, 'top', row)
   call setwinvar(winid, 'key', key)
   call setwinvar(winid, 'actions', actions)
   call setwinvar(winid, 'source', get(a:config, 'source', ''))
