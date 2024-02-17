@@ -204,7 +204,9 @@ export default class SymbolsOutline {
         nvim.pauseNotification()
         nvim.command(`${winnr}wincmd w`, true)
         let pos = item.selectRange.start
+        nvim.command(`normal! m'`, true)
         nvim.call('coc#cursor#move_to', [pos.line, pos.character], true)
+        nvim.command(`normal! m'`, true)
         nvim.command(`normal! zt`, true)
         let buf = nvim.createBuffer(bufnr)
         buf.highlightRanges('outline-hover', 'CocHoverRange', [item.selectRange])
