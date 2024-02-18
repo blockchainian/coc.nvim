@@ -202,7 +202,8 @@ export function checkFolder(dir: string, patterns: string[], token?: Cancellatio
       dot: true,
       cwd: dir,
       nodir: true,
-      absolute: false
+      absolute: false,
+      silent: true
     }, _err => {
       if (disposable) disposable.dispose()
       resolve(find)
