@@ -446,12 +446,8 @@ export default class BasicTreeView<T> implements TreeView<T> {
       await window.showWarningMessage('No actions available')
       return
     }
-    let res = -1
-    if (actions.length == 1 && actions[0].title == 'Visual Select') {
-      res = 0
-    } else {
-      res = await window.showMenuPicker(actions.map(o => o.title), 'Choose action')
-    }
+    let keys = actions.map(o => o.title)
+    let res = await window.showMenuPicker(keys, 'Choose action')
     if (res == -1) return
     await Promise.resolve(actions[res].handler(element))
   }
