@@ -19,6 +19,7 @@ export function filterLocalSymbols(symbol: DocumentSymbol): DocumentSymbol[] {
     SymbolKind.Boolean,
     SymbolKind.Constant,
     SymbolKind.Function,
+    SymbolKind.Number,
     SymbolKind.Object,
     SymbolKind.Package,
     SymbolKind.Property,
@@ -28,6 +29,7 @@ export function filterLocalSymbols(symbol: DocumentSymbol): DocumentSymbol[] {
     [SymbolKind.Class]: new Set([
       SymbolKind.Array,
       SymbolKind.Boolean,
+      SymbolKind.Class,
       SymbolKind.Constant,
       SymbolKind.Number,
       SymbolKind.String,
@@ -39,6 +41,7 @@ export function filterLocalSymbols(symbol: DocumentSymbol): DocumentSymbol[] {
     [SymbolKind.Function]: defaultFilter,
     [SymbolKind.Interface]: defaultFilter,
     [SymbolKind.Method]: defaultFilter,
+    [SymbolKind.Object]: defaultFilter,
     [SymbolKind.Property]: defaultFilter,
     [SymbolKind.Variable]: defaultFilter,
   }
